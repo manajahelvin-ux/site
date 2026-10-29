@@ -23,3 +23,24 @@ document.querySelectorAll('[data-scroll]').forEach(button => button.addEventList
   const carousel = button.closest('.carousel-section').querySelector('.carousel');
   carousel.scrollBy({left: Number(button.dataset.scroll) * (carousel.firstElementChild.offsetWidth + 20), behavior: 'smooth'});
 }));
+
+const activityButton = document.querySelector('.activity-toggle');
+const activityMenu = document.querySelector('#activity-menu');
+function setActivityMenu(open) {
+  activityButton.setAttribute('aria-expanded', String(open));
+  activityMenu.hidden = !open;
+}
+activityButton.addEventListener('click', () => setActivityMenu(activityMenu.hidden));
+document.addEventListener('click', event => {
+  if (!event.target.closest('.header-bottom')) setActivityMenu(false);
+  if (event.target.closest('#activity-menu a')) setActivityMenu(false);
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !activityMenu.hidden) {
+    setActivityMenu(false);
+    activityButton.focus();
+  }
+});
+toggle.addEventListener('click', () => {
+  if (!nav.classList.contains('open')) setActivityMenu(false);
+});
