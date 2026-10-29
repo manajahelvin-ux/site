@@ -24,23 +24,27 @@ document.querySelectorAll('[data-scroll]').forEach(button => button.addEventList
   carousel.scrollBy({left: Number(button.dataset.scroll) * (carousel.firstElementChild.offsetWidth + 20), behavior: 'smooth'});
 }));
 
-const activityButton = document.querySelector('.activity-toggle');
-const activityMenu = document.querySelector('#activity-menu');
-function setActivityMenu(open) {
-  activityButton.setAttribute('aria-expanded', String(open));
-  activityMenu.hidden = !open;
+const menuButtons = document.querySelectorAll('.activity-toggle, .section-toggle');
+function closeSectionMenus() {
+  menuButtons.forEach(button => {
+    button.setAttribute('aria-expanded', 'false');
+    document.getElementById(button.getAttribute('aria-controls')).hidden = true;
+  });
 }
-activityButton.addEventListener('click', () => setActivityMenu(activityMenu.hidden));
+menuButtons.forEach(button => button.addEventListener('click', () => {
+  const panel = document.getElementById(button.getAttribute('aria-controls'));
+  const open = panel.hidden;
+  closeSectionMenus();
+  panel.hidden = !open;
+  button.setAttribute('aria-expanded', String(open));
+}));
 document.addEventListener('click', event => {
-  if (!event.target.closest('.header-bottom')) setActivityMenu(false);
-  if (event.target.closest('#activity-menu a')) setActivityMenu(false);
+  if (!event.target.closest('.header-bottom') || event.target.closest('.activity-menu a')) closeSectionMenus();
 });
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && !activityMenu.hidden) {
-    setActivityMenu(false);
-    activityButton.focus();
+  if (event.key === 'Escape') {
+    const active = document.querySelector('.activity-toggle[aria-expanded="true"], .section-toggle[aria-expanded="true"]');
+    if (active) { closeSectionMenus(); active.focus(); }
   }
 });
-toggle.addEventListener('click', () => {
-  if (!nav.classList.contains('open')) setActivityMenu(false);
-});
+toggle.addEventListener('click', () => { if (!nav.classList.contains('open')) closeSectionMenus(); });
